@@ -1,126 +1,172 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
+const initialValues = {
+  full_name: "",
+  email: "",
+  password: "",
+  confirm_password: "",
+  agree: false,
+};
+
+const validationSchema = Yup.object({
+  full_name: Yup.string()
+    .min(2, "Mininum 2 characters")
+    .max(15, "Maximum 15 characters")
+    .required("Required!"),
+  email: Yup.string().email("Invalid email format").required("Required!"),
+  password: Yup.string().min(8, "Minimum 8 characters").required("Required!"),
+  confirm_password: Yup.string()
+    .oneOf([Yup.ref("password")], "Password's not match")
+    .required("Required!"),
+  agree: Yup.boolean().oneOf(
+    [true],
+    "You must accept the terms and conditions"
+  ),
+});
+
+const onSubmit = (values) => {
+  alert(JSON.stringify(values, null, 2));
+};
+
 function SignUp() {
-  const [inputValues, setInputValues] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    agree: "",
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit,
   });
-  const handleOnChangeInput = (event) => {
-    const { name, value } = event.target;
-    console.log(name, value);
-    setInputValues({ ...inputValues, [name]: value });
-  };
+
+  console.log(formik.values);
+
   return (
-    <div>
+    <React.Fragment>
       <body className="my-login-page">
         <section className="h-100">
           <div className="container h-100">
             <div className="row justify-content-md-center h-100">
               <div className="card-wrapper">
                 <div className="brand">
-                  <img src="https://img.icons8.com/fluent-systems-filled/96/000000/user.png" />{" "}
+                  <img
+                    src="https://img.icons8.com/fluent-systems-filled/96/000000/user.png"
+                    alt="user"
+                  />
                 </div>
                 <div className="card fat">
                   <div className="card-body">
                     <h4 className="card-title">Register</h4>
                     <div className="my-login-validation">
-                      <div className="form-group">
-                        <label for="name">Full Name</label>
-                        <input
-                          id="name"
-                          type="text"
-                          className="form-control"
-                          name="fullName"
-                          required
-                          value={inputValues.fullName}
-                          onChange={handleOnChangeInput}
-                          autoFocus
-                        />
-                        <div className="invalid-feedback">
-                          What's your name?
-                        </div>
-                      </div>
+                      <form onSubmit={formik.handleSubmit}>
+                        <div className="form-group">
+                          <label for="name">Full Name</label>
 
-                      <div className="form-group">
-                        <label for="email">E-Mail Address</label>
-                        <input
-                          id="email"
-                          type="email"
-                          className="form-control"
-                          name="email"
-                          required
-                          value={inputValues.email}
-                          onChange={handleOnChangeInput}
-                        />
-                        <div className="invalid-feedback">
-                          Your email is invalid
-                        </div>
-                      </div>
-
-                      <div className="form-group">
-                        <label for="password">Password</label>
-                        <input
-                          id="password"
-                          type="password"
-                          className="form-control"
-                          name="password"
-                          required
-                          //   data-eye={false}
-                          value={inputValues.password}
-                          onChange={handleOnChangeInput}
-                        />
-                        <div className="invalid-feedback">
-                          Password is required
-                        </div>
-                      </div>
-
-                      {/* <div class="form-group">
-                        <label>Password</label>
-                        <div class="input-group" id="show_hide_password">
-                          <input class="form-control" type="password" />
-                          <div class="input-group-addon">
-                            <a onClick={handlePasswordShow}>
-                              <i class="fa fa-eye-slash" aria-hidden="true"></i>
-                            </a>
-                          </div>
-                        </div>
-                      </div> */}
-
-                      <div className="form-group">
-                        <div className="custom-checkbox custom-control">
                           <input
-                            type="checkbox"
-                            name="agree"
-                            id="agree"
-                            className="custom-control-input"
-                            required=""
-                            value={inputValues.agree}
-                            onChange={handleOnChangeInput}
+                            id="name"
+                            type="text"
+                            className="form-control"
+                            name="full_name"
+                            {...formik.getFieldProps("full_name")}
                           />
-                          <label for="agree" className="custom-control-label">
-                            I agree to the <a href="#">Terms and Conditions</a>
-                          </label>
-                          <div className="invalid-feedback">
-                            You must agree with our Terms and Conditions
+                          <div class="invalid-feedback d-block">
+                            {formik.errors.full_name &&
+                              formik.touched.full_name && (
+                                <p>{formik.errors.full_name}</p>
+                              )}
                           </div>
                         </div>
-                      </div>
 
-                      <div className="form-group m-0">
-                        <button
-                          type="submit"
-                          className="btn btn-primary btn-block"
-                        >
-                          Register
-                        </button>
-                      </div>
-                      <div className="mt-4 text-center">
-                        Already have an account?
-                        <Link to="/">Login </Link>
-                      </div>
+                        <div className="form-group">
+                          <label for="email">E-Mail Address</label>
+                          <input
+                            id="email"
+                            type="email"
+                            className="form-control"
+                            name="email"
+                            required
+                            {...formik.getFieldProps("email")}
+                          />
+                          <div class="invalid-feedback d-block">
+                            {formik.errors.email && formik.touched.email && (
+                              <p>{formik.errors.email}</p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="form-group">
+                          <label for="password">Password</label>
+                          <input
+                            id="password"
+                            type="password"
+                            className="form-control"
+                            name="password"
+                            required
+                            {...formik.getFieldProps("password")}
+                          />
+                          <div class="invalid-feedback d-block">
+                            {formik.errors.password &&
+                              formik.touched.password && (
+                                <p>{formik.errors.password}</p>
+                              )}
+                          </div>
+                        </div>
+
+                        <div className="form-group">
+                          <label for="password">Confirm Password</label>
+                          <input
+                            id="password"
+                            type="password"
+                            className="form-control"
+                            name="confirm_password"
+                            {...formik.getFieldProps("confirm_password")}
+                          />
+                          <div class="invalid-feedback d-block">
+                            {formik.errors.confirm_password &&
+                              formik.touched.confirm_password && (
+                                <p>{formik.errors.confirm_password}</p>
+                              )}
+                          </div>
+                        </div>
+
+                        <div className="form-group">
+                          <div className="custom-checkbox custom-control">
+                            <input
+                              type="checkbox"
+                              name="agree"
+                              id="agree"
+                              class="custom-control-input"
+                              required=""
+                              {...formik.getFieldProps("agree")}
+                            />
+
+                            <label for="agree" className="custom-control-label">
+                              I agree to the{" "}
+                              <a href="#">Terms and Conditions</a>
+                            </label>
+                            <div class="invalid-feedback d-block">
+                              {formik.errors.agree && formik.touched.agree && (
+                                <p>{formik.errors.agree}</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="form-group m-0">
+                          <div>
+                            <button
+                              className="btn btn-primary btn-block"
+                              type="submit"
+                            >
+                              Register
+                            </button>
+                          </div>
+                        </div>
+                        <div className="mt-4 text-center">
+                          Already have an account?
+                          <Link to="/">Login </Link>
+                        </div>
+                      </form>
                     </div>
                   </div>
                 </div>
@@ -132,9 +178,8 @@ function SignUp() {
           </div>
         </section>
       </body>
-    </div>
+    </React.Fragment>
   );
 }
 
 export default SignUp;
-
