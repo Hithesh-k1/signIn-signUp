@@ -1,22 +1,33 @@
-import React, { useState } from "react";
+import { useFormik } from "formik";
+import React from "react";
 import { Link, useHistory } from "react-router-dom";
 import "./SignIn.css";
-function Login() {
-  const [inputValues, setInputValues] = useState({
-    email: "",
-    password: "",
-  });
-  const history = useHistory();
-  const handleOnChangeInput = (event) => {
-    const { name, value } = event.target;
-    console.log(name, value);
-    setInputValues({ ...inputValues, [name]: value });
-  };
+import * as Yup from "yup";
 
-  const handleOnSubmit = (e) => {
-    console.log(inputValues);
+const initialValues = {
+  email: "",
+  password: "",
+};
+
+const validationSchema = Yup.object({
+  email: Yup.string().email("Invalid email format").required("Required!"),
+  password: Yup.string().min(8, "Minimum 8 characters").required("Required!"),
+});
+
+function Login() {
+  const history = useHistory();
+  const loginSuccessful = () => {
     history.push("/home");
   };
+  const onSubmit = (values) => {
+    loginSuccessful();
+    alert(JSON.stringify(values, null, 2));
+  };
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit,
+  });
 
   return (
     <div>
@@ -32,77 +43,60 @@ function Login() {
                   <div className="card-body">
                     <h4 className="card-title">Login</h4>
                     <div className="my-login-validation">
-                      <div className="form-group">
-                        <label>E-Mail</label>
-                        <input
-                          id="email"
-                          type="email"
-                          className="form-control"
-                          name="email"
-                          value={inputValues.email}
-                          onChange={handleOnChangeInput}
-                          required
-                        />
-                        <div className="invalid-feedback">Email is invalid</div>
-                      </div>
-
-                      <div className="form-group">
-                        <label>
-                          Password
-                          {/* <a href="forgot.html" className="float-right">
-											Forgot Password?
-										</a> */}
-                        </label>
-                        <input
-                          id="password"
-                          type="password"
-                          className="form-control"
-                          name="password"
-                          value={inputValues.password}
-                          onChange={handleOnChangeInput}
-                          required
-                          data-eye
-                        />
-                        <div className="invalid-feedback">
-                          Password is required
-                        </div>
-                      </div>
-
-                      {/* <div className="form-group">
-                        <div className="custom-checkbox custom-control">
+                      <form onSubmit={formik.handleSubmit}>
+                        <div className="form-group">
+                          <label>E-Mail</label>
                           <input
-                            type="checkbox"
-                            name="remember"
-                            id="remember"
-                            className="custom-control-input"
+                            id="email"
+                            type="email"
+                            className="form-control"
+                            name="email"
+                            {...formik.getFieldProps("email")}
+                            required
                           />
-                          <label
-                            for="remember"
-                            className="custom-control-label"
-                          >
-                            Remember Me
-                          </label>
+                          <div class="invalid-feedback d-block">
+                            {formik.errors.email && formik.touched.email && (
+                              <p>{formik.errors.email}</p>
+                            )}
+                          </div>
                         </div>
-                      </div> */}
 
-                      <div className="form-group m-0">
-                        <button
-                          className="btn btn-primary btn-block"
-                          onClick={handleOnSubmit}
-                        >
-                          Login
-                        </button>
-                      </div>
-                      <div className="mt-4 text-center">
-                        Don't have an account?
-                        <Link to="/signup">Create One </Link>
-                      </div>
+                        <div className="form-group">
+                          <label>Password</label>
+                          <input
+                            id="password"
+                            type="password"
+                            className="form-control"
+                            name="password"
+                            {...formik.getFieldProps("password")}
+                            required
+                            data-eye
+                          />
+                          <div class="invalid-feedback d-block">
+                            {formik.errors.password &&
+                              formik.touched.password && (
+                                <p>{formik.errors.password}</p>
+                              )}
+                          </div>
+                        </div>
+
+                        <div className="form-group m-0">
+                          <button
+                            className="btn btn-primary btn-block"
+                            type="submit"
+                          >
+                            Login
+                          </button>
+                        </div>
+                        <div className="mt-4 text-center">
+                          Don't have an account?
+                          <Link to="/signup">Create One </Link>
+                        </div>
+                      </form>
                     </div>
                   </div>
                 </div>
-                {/* <div className="footer">
-						Copyright &copy; 2017 &mdash; Your Company 
-					</div> */}
+                <div className="footer">Copyright &copy; 2021 &mdash;</div>
               </div>
             </div>
           </div>
