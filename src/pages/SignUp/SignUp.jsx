@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import * as constant from "../../constants";
 
 const initialValues = {
   full_name: "",
@@ -28,7 +29,7 @@ const validationSchema = Yup.object({
 });
 
 const onSubmit = (values) => {
-  console.log('fghjk')
+  console.log("fghjk");
   alert(JSON.stringify(values, null, 2));
 };
 
@@ -49,10 +50,7 @@ function SignUp() {
             <div className="row justify-content-md-center h-100">
               <div className="card-wrapper">
                 <div className="brand">
-                  <img
-                    src="https://img.icons8.com/fluent-systems-filled/96/000000/user.png"
-                    alt="user"
-                  />
+                  <img src={constant.USER_ICON} alt="user" />
                 </div>
                 <div className="card fat">
                   <div className="card-body">

@@ -1,8 +1,10 @@
 import { useFormik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import "./SignIn.css";
 import * as Yup from "yup";
+import { useAuth } from "../../context/Auth";
+import * as constant from "../../constants";
 
 const initialValues = {
   email: "",
@@ -10,18 +12,33 @@ const initialValues = {
 };
 
 const validationSchema = Yup.object({
-  email: Yup.string().email("Invalid email format").required("Required!"),
-  password: Yup.string().min(8, "Minimum 8 characters").required("Required!"),
+  email: Yup.string()
+    .email("Please enter the valid email ")
+    .required("Required !"),
+  password: Yup.string().min(8, "Minimum 8 characters").required("Required !"),
 });
 
 function Login() {
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const { setAuthTokens } = useAuth();
   const history = useHistory();
   const loginSuccessful = () => {
     history.push("/home");
   };
   const onSubmit = (values) => {
-    loginSuccessful();
-    alert(JSON.stringify(values, null, 2));
+    if (
+      values.email === constant.USER_EMAIL &&
+      values.password === constant.USER_PASSWORD
+    ) {
+      setAuthTokens("Success");
+      setLoggedIn(true);
+    } else {
+      alert("Invalid Credentials");
+    }
+
+    if (isLoggedIn) {
+      loginSuccessful();
+    }
   };
   const formik = useFormik({
     initialValues,
@@ -37,7 +54,7 @@ function Login() {
             <div className="row justify-content-md-center h-100">
               <div className="card-wrapper">
                 <div className="brand">
-                  <img src="https://img.icons8.com/fluent-systems-filled/96/000000/user.png" />{" "}
+                  <img src={constant.USER_ICON} alt="user" />
                 </div>
                 <div className="card fat">
                   <div className="card-body">
