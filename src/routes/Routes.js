@@ -5,6 +5,7 @@ import SignIn from "../pages/SignIn/SignIn";
 import Home from "../pages/Home/Home";
 import { AuthContext } from "../context/Auth";
 import PrivateRoute from "./PrivateRoute";
+import PageNotFound from "../pages/pageNotFound/PageNotFound";
 
 export default function Routes() {
   const existingTokens = JSON.parse(localStorage.getItem("tokens"));
@@ -23,7 +24,7 @@ export default function Routes() {
             <Route path="/" component={SignIn} exact />
             <Route path="/signup" component={SignUp} />
             <PrivateRoute path="/home" component={Home} />
-            {/* <Route path='*' component={PageNotFound} /> */}
+            <Route path='*' component={PageNotFound} />
 
             {/* <Route component={Error} /> */}
           </Switch>
